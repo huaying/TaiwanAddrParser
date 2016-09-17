@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Taiwan Address Parser</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'semantic.min.css' %}">
+    <style>
+      body {
+        background: #F7F7F7;
+      }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body >
+    <br>
+    <div class="ui text container">
+
+    <h1 class="ui header">
+      <i class="search icon"></i>
+      <div class="content ">
+        尋找文章裡的地址
+        <div class="sub header">從連結中找出連結文章裡的地址</div>
+      </div>
+    </h1>
+    </div>
+    <div class="ui text container segment">
+
+
+
+      <form class="ui form">
+        <div class="field">
+          <input id="search_url" type="text" class="form-control" placeholder="輸入網址"/>
+        </div>
+        <button id="search" class="ui primary button" type="button">尋找連結裡的地址</button>
+      </form>
+    </div>
+    <div class="ui text container ">
+
+    <table class="ui celled table">
+      <thead><tr><th>文章裡的地址</th><th>文章連結</th></tr></thead>
+      <tbody id="result"></tbody>
+    </table>
+  </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static '/semantic.min.js' %}"></script>
+    <script>
+    var link = "";
+
+    var search = function(){
+      link = $("#search_url").val()
+      $.ajax({
+        url: "./search/",
+        jsonp: "result",
+        dataType: "jsonp",
+        data:{
+          link: link
+        }
+        }).always(function(){
+          $("#search").on("click",search);
+          $("#search").removeClass("loading");
+        });
+
+      $("#search").off("click",search);
+      $("#search").addClass("loading");
+    }
+    var result = function(addrs){
+        $("<tr><td>"+addrs.join('<br>')+"</td><td>"+link+"</td></tr>").prependTo("#result");
+        // $.each(addrs,function(id,addr){
+        //
+        //   $("#result").append("<tr><td>"+addr+"</td><td>"+link+"</td></tr>");
+        // })
+    }
+    $('form').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) {
+        e.preventDefault();
+        return false;
+      }
+    });
+    $("#search").on("click",search);
+    </script>
+  </body>
+</html>
